@@ -66,11 +66,12 @@ model.compile(optimizer=Adam(learning_rate=1e-5), loss=["sparse_categorical_cros
 model.summary()
 checkpoints = ModelCheckpoint(filepath='model/ck/weights.{epoch:04d}.hdf5', monitor="val_loss", verbose=1,
                               save_weights_only=True, period=1)
+EarlyStop=EarlyStopping(monitor='val_accuracy', patience=3,verbose=1, mode='max')
 
 history = model.fit(
     [x_train_emb, x_train_dfg, x_train_cfg, x_train_ast], y_train,
     validation_data=([x_val_emb, x_val_dfg, x_val_cfg, x_val_ast], y_val),
-    epochs=50, batch_size=64, verbose=2, callbacks=[checkpoints])
+    epochs=50, batch_size=64, verbose=2, callbacks=[checkpoints,EarlyStop])
 score = model.evaluate([x_test_emb, x_test_dfg, x_test_cfg, x_test_ast], y_test, verbose=0, batch_size=128)
 print(score)
 print(model.metrics_names)
